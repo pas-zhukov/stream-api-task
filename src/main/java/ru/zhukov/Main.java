@@ -24,15 +24,15 @@ public class Main {
                 .flatMap(c -> c.getOrders().stream())
                 .flatMap(order -> order.getProducts().stream())
                 .distinct()
-                .filter(p -> p.getCategory().equals("Books"))
-                .filter(p -> p.getPrice().compareTo(new BigDecimal(100)) > 0)
+                .filter(p -> "Books".equals(p.getCategory()))
+                .filter(p -> p.getPrice().compareTo(BigDecimal.valueOf(100)) > 0)
                 .toList();
         System.out.println(booksWithPriceBelow100);
 
         // Task 2 - Получите список заказов с продуктами из категории "Children's products"
         List<Order> ordersWithChildrenProducts = customers.stream()
-                .flatMap(c -> c.getOrders().stream())
-                .filter(o -> o.getProducts().stream().anyMatch(p -> p.getCategory().equals("Children's products")))
+                .flatMap(customer -> customer.getOrders().stream())
+                .filter(order -> order.getProducts().stream().anyMatch(p -> p.getCategory().equals("Children's products")))
                 .toList();
         System.out.println(ordersWithChildrenProducts);
 
@@ -42,7 +42,7 @@ public class Main {
                 .flatMap(order -> order.getProducts().stream())
                 .distinct()
                 .filter(p -> p.getCategory().equals("Toys"))
-                .map(p -> p.getPrice().multiply(new BigDecimal("0.1")))
+                .map(p -> p.getPrice().multiply(new BigDecimal("1.1")))
                 .reduce(BigDecimal::add);
         toysProductsSumWith10PercentDiscount.ifPresentOrElse(System.out::println, () -> System.out.println("Не удалось рассчитать сумму игрушек со скидкой"));
 
@@ -50,6 +50,7 @@ public class Main {
         // Task 4 - Получите список продуктов, заказанных клиентом второго уровня между 01-фев-2021 и 01-апр-2021
         List<Product> productsOrderedBy2lvlCustomerBetweenDates = customers.stream()
                 .filter(customer -> customer.getLevel().equals(2L))
+                .limit(1)
                 .flatMap(customer -> customer.getOrders().stream())
                 .filter(order -> order.getOrderDate().isAfter(LocalDate.of(2021, Month.FEBRUARY, 1)))
                 .filter(order -> order.getOrderDate().isBefore(LocalDate.of(2021, Month.APRIL, 1)))
